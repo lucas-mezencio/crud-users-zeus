@@ -1,6 +1,7 @@
 package routes
 
 import (
+	"bytes"
 	"crud_tasks/handlers"
 	"crud_tasks/models"
 	"encoding/json"
@@ -125,5 +126,33 @@ func TestDeleteUserById(t *testing.T) {
 		resBody, _ := ioutil.ReadAll(res.Body)
 		got := string(resBody)
 		assert.Equal(t, expect, got, "expect a success message")
+	})
+}
+
+func TestInsertUser(t *testing.T) {
+	r := setupTestingRoutes()
+	r.POST("/users", handlers.CreateUser)
+
+	t.Run("create valid user", func(t *testing.T) {
+		user := models.User{
+			Name:     "test get by id",
+			Email:    "getbyid@mail.com",
+			Password: "pass",
+			Phone:    "a number",
+		}
+
+		bytesUser, _ := json.Marshal(user)
+		req, _ := http.NewRequest("POST", "/users", bytes.NewBuffer(bytesUser))
+		res := httptest.NewRecorder()
+		r.ServeHTTP(res, req)
+		resBody, _ := ioutil.ReadAll(res.Body)
+		var userGot models.User
+		_ = json.Unmarshal(resBody, &userGot)
+
+		assert.Equal(t, http.StatusCreated, res.Code)
+		assert.Equal(t, user.Email, userGot.Email)
+
+		defer models.DeleteUserById(userGot.ID)
+
 	})
 }

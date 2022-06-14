@@ -8,11 +8,11 @@ import (
 )
 
 type User struct {
-	ID       int
-	Name     string
-	Email    string
-	Password string
-	Phone    string
+	ID       int    `json:"id,omitempty"`
+	Name     string `json:"name,omitempty"`
+	Email    string `json:"email,omitempty"`
+	Password string `json:"password,omitempty"`
+	Phone    string `json:"phone,omitempty"`
 }
 
 //var ErrInternalError = errors.New("Internal Server Error")

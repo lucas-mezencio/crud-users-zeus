@@ -27,10 +27,7 @@ func CreateUser(c *gin.Context) {
 		})
 		return
 	}
-	c.JSON(http.StatusCreated, gin.H{
-		"status": "created",
-		"data":   user,
-	})
+	c.JSON(http.StatusCreated, user)
 }
 
 func GetAllUsers(c *gin.Context) {
