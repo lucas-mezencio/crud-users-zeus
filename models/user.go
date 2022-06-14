@@ -2,6 +2,7 @@ package models
 
 import (
 	"crud_tasks/database"
+	"errors"
 	"log"
 )
 
@@ -49,7 +50,7 @@ func GetUserById(id int) User {
 	return User{int(resId), name, email, password, phone}
 }
 
-func InsertUser(name, email, password, phone string) int {
+func InsertUser(name, email, password, phone string) (int, error) {
 	db := database.ConnectWithDB()
 	var lastId int64
 	err := db.QueryRow(`insert into zeus.users(nome, email, senha, telefone) values ($1, $2, $3, $4) returning id`,
@@ -58,12 +59,12 @@ func InsertUser(name, email, password, phone string) int {
 		phone).Scan(&lastId)
 
 	if err != nil {
-		log.Panicln(err.Error())
+		return 0, errors.New("insert user with unique field already registered")
 	}
 
 	err = db.Close()
 	if err != nil {
 		log.Panicln(err.Error())
 	}
-	return int(lastId)
+	return int(lastId), nil
 }
