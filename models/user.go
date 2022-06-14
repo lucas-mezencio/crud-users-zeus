@@ -30,10 +30,6 @@ func GetUsers() []User {
 		}
 		users = append(users, User{int(id), name, email, password, phone})
 	}
-	err = rows.Close()
-	if err != nil {
-		log.Panicln(err.Error())
-	}
 	err = db.Close()
 	if err != nil {
 		log.Panicln(err.Error())
@@ -41,22 +37,26 @@ func GetUsers() []User {
 	return users
 }
 
-//func GetUserById(id int) User {
-//
-//}
+func GetUserById(id int) User {
+	db := database.ConnectWithDB()
+	row := db.QueryRow("select * from zeus.users where id = $1", id)
+	var resId int64
+	var name, email, password, phone string
+	err := row.Scan(&resId, &name, &email, &password, &phone)
+	if err != nil { // ErrNoRows
+		log.Panicln("User not found", err.Error())
+	}
+	return User{int(resId), name, email, password, phone}
+}
 
 func InsertUser(name, email, password, phone string) int {
 	db := database.ConnectWithDB()
-
-	result, err := db.Exec(`insert into users(nome, email, senha, telefone) values ($1, $2, $3, $4)`, name, email,
+	var lastId int64
+	err := db.QueryRow(`insert into zeus.users(nome, email, senha, telefone) values ($1, $2, $3, $4) returning id`,
+		name, email,
 		password,
-		phone)
+		phone).Scan(&lastId)
 
-	if err != nil {
-		log.Panicln(err.Error())
-	}
-
-	lastId, err := result.LastInsertId()
 	if err != nil {
 		log.Panicln(err.Error())
 	}

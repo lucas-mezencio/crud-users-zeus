@@ -6,6 +6,6 @@ import (
 )
 
 func main() {
-	fmt.Println(models.GetUsers())
+	fmt.Println(models.GetUserById(1))
 	//routes.HandleRoutes()
 }
