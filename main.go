@@ -1,7 +1,11 @@
 package main
 
-import "crud_tasks/routes"
+import (
+	"crud_tasks/models"
+	"fmt"
+)
 
 func main() {
-	routes.HandleRoutes()
+	fmt.Println(models.GetUsers())
+	//routes.HandleRoutes()
 }
