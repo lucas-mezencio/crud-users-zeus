@@ -11,6 +11,7 @@ func HandleRoutes() {
 
 	r.GET("/users", handlers.GetAllUsers)
 	r.GET("/users/:id", handlers.GetUserById)
+	r.DELETE("/users/:id", handlers.DeleteUserById)
 
 	err := r.Run()
 	if err != nil {

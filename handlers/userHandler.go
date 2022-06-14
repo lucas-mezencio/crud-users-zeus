@@ -15,7 +15,7 @@ func GetUserById(c *gin.Context) {
 	id, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
-			"Error": "Cannot understand this id",
+			"error": "cannot understand this id",
 		})
 		return
 	}
@@ -27,4 +27,27 @@ func GetUserById(c *gin.Context) {
 		return
 	}
 	c.JSON(http.StatusOK, models.GetUserById(id))
+}
+
+func DeleteUserById(c *gin.Context) {
+	id, err := strconv.Atoi(c.Param("id"))
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": "cannot understand this id",
+		})
+		return
+	}
+	user := models.GetUserById(id)
+	if user == (models.User{}) {
+		c.JSON(http.StatusNotFound, gin.H{
+			"status": "user not found to delete",
+		})
+		return
+	}
+
+	models.DeleteUserById(id)
+	c.JSON(http.StatusOK, gin.H{
+		"status": "user deleted successfully",
+		"data":   user,
+	})
 }
