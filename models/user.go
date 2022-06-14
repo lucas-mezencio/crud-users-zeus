@@ -2,6 +2,7 @@ package models
 
 import (
 	"crud_tasks/database"
+	"database/sql"
 	"errors"
 	"log"
 )
@@ -13,6 +14,8 @@ type User struct {
 	Password string
 	Phone    string
 }
+
+//var ErrInternalError = errors.New("Internal Server Error")
 
 func GetUsers() []User {
 	db := database.ConnectWithDB()
@@ -44,8 +47,11 @@ func GetUserById(id int) User {
 	var resId int64
 	var name, email, password, phone string
 	err := row.Scan(&resId, &name, &email, &password, &phone)
-	if err != nil { // ErrNoRows
+	if err == sql.ErrNoRows { // ErrNoRows
+		return User{}
+	} else if err != nil {
 		log.Panicln("User not found", err.Error())
+
 	}
 	return User{int(resId), name, email, password, phone}
 }

@@ -10,6 +10,7 @@ func HandleRoutes() {
 	r := gin.Default()
 
 	r.GET("/users", handlers.GetAllUsers)
+	r.GET("/users/:id", handlers.GetUserById)
 
 	err := r.Run()
 	if err != nil {
