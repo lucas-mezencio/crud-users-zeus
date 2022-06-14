@@ -16,9 +16,9 @@ type User struct {
 
 func GetUsers() []User {
 	db := database.ConnectWithDB()
-	var users []User
+	users := make([]User, 0)
 
-	rows, err := db.Query("select * from zeus.users asc")
+	rows, err := db.Query("select * from zeus.users order by id asc")
 	if err != nil {
 		log.Panicln(err.Error())
 	}
