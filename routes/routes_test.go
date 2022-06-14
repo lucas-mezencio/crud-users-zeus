@@ -74,3 +74,56 @@ func TestGetUserById(t *testing.T) {
 		assert.Equal(t, expect, got, "erro response expected")
 	})
 }
+
+func TestDeleteUserById(t *testing.T) {
+	r := setupTestingRoutes()
+	r.DELETE("/users/:id", handlers.DeleteUserById)
+
+	t.Run("test invalid id", func(t *testing.T) {
+		req, _ := http.NewRequest("DELETE", "/users/asdf", nil)
+		res := httptest.NewRecorder()
+
+		r.ServeHTTP(res, req)
+		expect := `{"error":"cannot understand this id"}`
+		resBody, _ := ioutil.ReadAll(res.Body)
+		got := string(resBody)
+		assert.Equal(t, expect, got, "expected to got an error response body")
+	})
+
+	t.Run("delete not existent id", func(t *testing.T) {
+		req, _ := http.NewRequest("DELETE", "/users/1", nil)
+		res := httptest.NewRecorder()
+		r.ServeHTTP(res, req)
+
+		expect := `{"status":"user not found to delete"}`
+		resBody, _ := ioutil.ReadAll(res.Body)
+		got := string(resBody)
+		assert.Equal(t, expect, got, "expected to got an not found response")
+	})
+
+	t.Run("delete existing id", func(t *testing.T) {
+		userExpect := models.User{
+			Name:     "test get by id",
+			Email:    "getbyid@mail.com",
+			Password: "pass",
+			Phone:    "a number",
+		}
+		id, _ := models.InsertUser(
+			userExpect.Name,
+			userExpect.Email,
+			userExpect.Password,
+			userExpect.Phone,
+		)
+		userExpect.ID = id
+
+		req, _ := http.NewRequest("DELETE", "/users/"+strconv.Itoa(id), nil)
+		res := httptest.NewRecorder()
+		r.ServeHTTP(res, req)
+
+		userJson, _ := json.Marshal(userExpect)
+		expect := "{\"data\":" + string(userJson) + ",\"status\":\"user deleted successfully\"}"
+		resBody, _ := ioutil.ReadAll(res.Body)
+		got := string(resBody)
+		assert.Equal(t, expect, got, "expect a success message")
+	})
+}
