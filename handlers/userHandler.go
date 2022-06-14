@@ -7,6 +7,32 @@ import (
 	"strconv"
 )
 
+func CreateUser(c *gin.Context) {
+	var user models.User
+	if err := c.ShouldBindJSON(&user); err != nil {
+		c.JSON(
+			http.StatusBadRequest,
+			gin.H{
+				"err": err.Error(),
+			},
+		)
+		return
+	}
+
+	id, err := models.InsertUser(user.Name, user.Email, user.Password, user.Phone)
+	user.ID = id
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"err": err.Error(),
+		})
+		return
+	}
+	c.JSON(http.StatusCreated, gin.H{
+		"status": "created",
+		"data":   user,
+	})
+}
+
 func GetAllUsers(c *gin.Context) {
 	c.JSON(http.StatusOK, models.GetUsers())
 }
