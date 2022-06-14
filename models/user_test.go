@@ -15,9 +15,12 @@ func TestInsertUser(t *testing.T) {
 		got := GetUserById(id)
 		want := User{id, userName, userEmail, userPassword, userPhone}
 		assert.Equal(t, want, got)
+		DeleteUserById(id)
 	})
 	t.Run("insert user with unique field already registered", func(t *testing.T) {
+		id, _ := InsertUser(userName, userEmail, userPassword, userPhone)
 		_, err := InsertUser(userName, userEmail, userPassword, userPhone)
 		assert.Error(t, err, "insert user with unique field already registered")
+		DeleteUserById(id)
 	})
 }

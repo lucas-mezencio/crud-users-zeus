@@ -68,3 +68,14 @@ func InsertUser(name, email, password, phone string) (int, error) {
 	}
 	return int(lastId), nil
 }
+
+// poderia retornar as colunas afetadas
+func DeleteUserById(id int) {
+	db := database.ConnectWithDB()
+	defer db.Close()
+
+	_, err := db.Exec("delete from zeus.users where id = $1", id)
+	if err != nil {
+		log.Panicln(err.Error())
+	}
+}
