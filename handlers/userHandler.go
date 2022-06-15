@@ -91,3 +91,47 @@ func EditUserById(c *gin.Context) {
 	models.EditUser(user)
 	c.JSON(http.StatusOK, user)
 }
+
+func PatchUserById(c *gin.Context) {
+	id, err := strconv.Atoi(c.Param("id"))
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": "cannot understand this id",
+		})
+		return
+	}
+
+	currentUser := models.GetUserById(id)
+	if currentUser == (models.User{}) {
+		c.JSON(http.StatusNotFound, nil)
+		return
+	}
+
+	var user models.User
+	err = c.ShouldBindJSON(&user)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": "invalid body",
+		})
+		return
+	}
+
+	user.ID = currentUser.ID
+	if user.Name == "" {
+		user.Name = currentUser.Name
+	}
+
+	if user.Email == "" {
+		user.Email = currentUser.Email
+	}
+
+	if user.Password == "" {
+		user.Password = currentUser.Password
+	}
+
+	if user.Phone == "" {
+		user.Phone = currentUser.Phone
+	}
+
+	c.JSON(http.StatusOK, user)
+}
