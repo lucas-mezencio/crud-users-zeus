@@ -1,3 +1,4 @@
+// Package models includes the models of the application and its database operations
 package models
 
 import (
@@ -7,6 +8,7 @@ import (
 	"log"
 )
 
+// User defines the user model for the application purpose and database table users
 type User struct {
 	ID       int    `json:"id,omitempty"`
 	Name     string `json:"name,omitempty"`
@@ -15,8 +17,8 @@ type User struct {
 	Phone    string `json:"phone,omitempty"`
 }
 
-//var ErrInternalError = errors.New("Internal Server Error")
-
+// GetUsers consults the database to search for all users.
+// It returns a list (slice) of User.
 func GetUsers() []User {
 	db := database.ConnectWithDB()
 	users := make([]User, 0)
@@ -41,6 +43,9 @@ func GetUsers() []User {
 	return users
 }
 
+// GetUserById search on the database to find a specific user given its id as argument.
+// If the user don't exists the function returns an empty one
+// Returns the user with the given id.
 func GetUserById(id int) User {
 	db := database.ConnectWithDB()
 	row := db.QueryRow("select * from zeus.users where id = $1", id)
@@ -56,6 +61,9 @@ func GetUserById(id int) User {
 	return User{int(resId), name, email, password, phone}
 }
 
+// InsertUser inserts a user on database by giving its attributes.
+// If exists a user with same email or same phone in database it returns 0 and an error.
+// Returns the id of the new user.
 func InsertUser(name, email, password, phone string) (int, error) {
 	db := database.ConnectWithDB()
 	var lastId int64
@@ -75,7 +83,7 @@ func InsertUser(name, email, password, phone string) (int, error) {
 	return int(lastId), nil
 }
 
-// poderia a quantidade retornar as colunas afetadas
+// DeleteUserById deletes an user on database given its id
 func DeleteUserById(id int) {
 	db := database.ConnectWithDB()
 	defer db.Close()
@@ -86,6 +94,8 @@ func DeleteUserById(id int) {
 	}
 }
 
+// EditUser is responsible for update user data on database given a new struct User with the
+//matching id existent on database.
 func EditUser(user User) {
 	db := database.ConnectWithDB()
 	defer db.Close()
