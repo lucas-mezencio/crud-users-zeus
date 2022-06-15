@@ -75,7 +75,7 @@ func InsertUser(name, email, password, phone string) (int, error) {
 	return int(lastId), nil
 }
 
-// poderia retornar as colunas afetadas
+// poderia a quantidade retornar as colunas afetadas
 func DeleteUserById(id int) {
 	db := database.ConnectWithDB()
 	defer db.Close()
@@ -83,5 +83,22 @@ func DeleteUserById(id int) {
 	_, err := db.Exec("delete from zeus.users where id = $1", id)
 	if err != nil {
 		log.Panicln(err.Error())
+	}
+}
+
+func EditUser(user User) {
+	db := database.ConnectWithDB()
+	defer db.Close()
+
+	_, err := db.Exec(
+		"update zeus.users set nome = $1, email = $2, senha = $3, telefone = $4 where id = $5",
+		user.Name,
+		user.Email,
+		user.Password,
+		user.Phone,
+		user.ID,
+	)
+	if err != nil {
+		log.Panicf("Can't edit this user - Error: %q\n", err.Error())
 	}
 }

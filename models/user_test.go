@@ -24,3 +24,32 @@ func TestInsertUser(t *testing.T) {
 		DeleteUserById(id)
 	})
 }
+
+func TestEditUserById(t *testing.T) {
+	currentUser := User{
+		Name:     "teste321",
+		Email:    "teste321@mail",
+		Password: "senha321",
+		Phone:    "34 22222222",
+	}
+	modifiedUser := User{
+		Name:     "teste123",
+		Email:    "teste123@mail",
+		Password: "senha123",
+		Phone:    "34 phone",
+	}
+
+	t.Run("edit user", func(t *testing.T) {
+		currentUser.ID, _ = InsertUser(
+			currentUser.Name,
+			currentUser.Email,
+			currentUser.Password,
+			currentUser.Phone,
+		)
+		modifiedUser.ID = currentUser.ID
+		EditUser(modifiedUser)
+		expectedUser := GetUserById(modifiedUser.ID)
+		defer DeleteUserById(modifiedUser.ID)
+		assert.Equal(t, expectedUser, modifiedUser)
+	})
+}
