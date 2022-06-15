@@ -1,3 +1,4 @@
+//Package routes is responsible for routing the application
 package routes
 
 import (
@@ -6,6 +7,7 @@ import (
 	"log"
 )
 
+// HandleRoutes defines the routes of the application using the gin framework
 func HandleRoutes() {
 	r := gin.Default()
 
