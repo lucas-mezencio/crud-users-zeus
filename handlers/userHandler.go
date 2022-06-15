@@ -1,3 +1,4 @@
+// Package handlers provides handlers (controllers) for each model on the application
 package handlers
 
 import (
@@ -7,6 +8,11 @@ import (
 	"strconv"
 )
 
+// CreateUser handles the route to create users:
+//		POST /users
+// If the request body can't be read returns a Bad Request status
+// If the user already exists returns also a Bad Request status
+// Returns the user created as json on body and a Created status
 func CreateUser(c *gin.Context) {
 	var user models.User
 	if err := c.ShouldBindJSON(&user); err != nil {
@@ -30,10 +36,18 @@ func CreateUser(c *gin.Context) {
 	c.JSON(http.StatusCreated, user)
 }
 
+// GetAllUsers handles the route to get all users on db:
+//		GET /users
+// Returns a list of users as json, could be an empty list and Ok status
 func GetAllUsers(c *gin.Context) {
 	c.JSON(http.StatusOK, models.GetUsers())
 }
 
+// GetUserById handles the route to get a user by its id:
+// 		GET /users/id
+// If the request body can't be read returns a Bad Request status
+// If the user doesn't exist returns a Not Found status
+// Returns a user as json and Ok status
 func GetUserById(c *gin.Context) {
 	id, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
@@ -52,6 +66,11 @@ func GetUserById(c *gin.Context) {
 	c.JSON(http.StatusOK, models.GetUserById(id))
 }
 
+// DeleteUserById handles the route to delete a user by its id:
+//		DELETE /users/id
+// If the request body can't be read returns a Bad Request status
+// If the user doesn't exist returns a Not Found status
+// Returns a json body with a success message and the deleted user as data and Ok status
 func DeleteUserById(c *gin.Context) {
 	id, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
@@ -75,6 +94,11 @@ func DeleteUserById(c *gin.Context) {
 	})
 }
 
+// EditUserById handles the route to edit a user by its id:
+//		PUT /users/id
+// If the request body can't be read returns a Bad Request status
+// If the user doesn't exist returns a Not Found status
+// Returns the update user data as json and Ok status
 func EditUserById(c *gin.Context) {
 	var user models.User
 	err := c.ShouldBindJSON(&user)
@@ -92,6 +116,12 @@ func EditUserById(c *gin.Context) {
 	c.JSON(http.StatusOK, user)
 }
 
+// PatchUserById handles the route to edit a user via patch method by its id:
+//		PATCH /users/id
+// If the request body can't be read returns a Bad Request status
+// If the user doesn't exist returns a Not Found status
+// If the id can't be read returns a Bad Request status
+// Returns the updated user with an Ok status
 func PatchUserById(c *gin.Context) {
 	id, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
@@ -136,6 +166,8 @@ func PatchUserById(c *gin.Context) {
 	c.JSON(http.StatusOK, user)
 }
 
+// NoRoute handles any not specified route on application
+// Returns a body with a not found message and a Not Found status
 func NoRoute(c *gin.Context) {
 	c.JSON(http.StatusNotFound, gin.H{
 		"status": "Page not Found",
