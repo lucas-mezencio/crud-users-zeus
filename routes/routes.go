@@ -13,6 +13,7 @@ func HandleRoutes() {
 	r.GET("/users/:id", handlers.GetUserById)
 	r.DELETE("/users/:id", handlers.DeleteUserById)
 	r.POST("/users", handlers.CreateUser)
+	r.PUT("/users/:id", handlers.EditUserById)
 
 	err := r.Run()
 	if err != nil {

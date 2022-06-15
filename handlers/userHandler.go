@@ -74,3 +74,20 @@ func DeleteUserById(c *gin.Context) {
 		"data":   user,
 	})
 }
+
+func EditUserById(c *gin.Context) {
+	var user models.User
+	err := c.ShouldBindJSON(&user)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, nil)
+		return
+	}
+	userCheck := models.GetUserById(user.ID)
+	if userCheck == (models.User{}) {
+		c.JSON(http.StatusNotFound, nil)
+		return
+	}
+
+	models.EditUser(user)
+	c.JSON(http.StatusOK, user)
+}

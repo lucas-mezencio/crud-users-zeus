@@ -156,3 +156,58 @@ func TestInsertUser(t *testing.T) {
 
 	})
 }
+
+func TestEditUserById(t *testing.T) {
+	r := setupTestingRoutes()
+	r.PUT("/users/:id", handlers.EditUserById)
+
+	currentUser := models.User{
+		Name:     "teste321",
+		Email:    "teste321@mail",
+		Password: "senha321",
+		Phone:    "34 22222222",
+	}
+	modifiedUser := models.User{
+		Name:     "teste123",
+		Email:    "teste123@mail",
+		Password: "senha123",
+		Phone:    "34 phone",
+	}
+
+	t.Run("test update existing user", func(t *testing.T) {
+		currentUser.ID, _ = models.InsertUser(
+			currentUser.Name,
+			currentUser.Email,
+			currentUser.Password,
+			currentUser.Phone,
+		)
+		defer models.DeleteUserById(currentUser.ID)
+
+		modifiedUser.ID = currentUser.ID
+		newBytesUser, _ := json.Marshal(modifiedUser)
+
+		req, _ := http.NewRequest("PUT", "/users/"+strconv.Itoa(currentUser.ID), bytes.NewBuffer(newBytesUser))
+		res := httptest.NewRecorder()
+		r.ServeHTTP(res, req)
+
+		resBody, _ := ioutil.ReadAll(res.Body)
+		var userGot models.User
+		_ = json.Unmarshal(resBody, &userGot)
+
+		assert.Equal(t, http.StatusOK, res.Code, "status code dont match")
+		assert.Equal(t, modifiedUser, userGot, "json body dont match")
+	})
+
+	t.Run("edit inexistent user id on database", func(t *testing.T) {
+		modifiedUser.ID = 0
+
+		newBytesUser, _ := json.Marshal(modifiedUser)
+
+		req, _ := http.NewRequest("PUT", "/users/"+strconv.Itoa(0), bytes.NewBuffer(newBytesUser))
+		res := httptest.NewRecorder()
+		r.ServeHTTP(res, req)
+
+		assert.Equal(t, http.StatusNotFound, res.Code)
+	})
+
+}
