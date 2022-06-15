@@ -135,3 +135,9 @@ func PatchUserById(c *gin.Context) {
 
 	c.JSON(http.StatusOK, user)
 }
+
+func NoRoute(c *gin.Context) {
+	c.JSON(http.StatusNotFound, gin.H{
+		"status": "Page not Found",
+	})
+}

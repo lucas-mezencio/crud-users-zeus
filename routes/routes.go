@@ -15,6 +15,7 @@ func HandleRoutes() {
 	r.POST("/users", handlers.CreateUser)
 	r.PUT("/users/:id", handlers.EditUserById)
 	r.PATCH("/users/:id", handlers.PatchUserById)
+	r.NoRoute(handlers.NoRoute)
 
 	err := r.Run()
 	if err != nil {
